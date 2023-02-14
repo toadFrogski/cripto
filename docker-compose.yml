@@ -1,0 +1,40 @@
+version: '3'
+
+volumes:
+  python_sock:
+
+
+services:
+  nginx:
+    restart: unless-stopped
+    image: nginx
+    depends_on:
+      - backend
+    volumes:
+      - ./backend/static:/var/www/backend/static
+      - ./backend/media:/var/www/backend/media
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/conf.dev.d:/etc/nginx/conf.d
+      - python_sock:/var/run/python
+    ports:
+      - 10050:80
+
+  backend:
+    restart: unless-stopped
+    image: registry.deeplace.md/deeplace-infrastructure/python-django:slim-dev
+    volumes:
+      - ./backend:/var/www/backend
+      - python_sock:/var/run/python
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    ports:
+      - "5678:5678"
+  db:
+    restart: unless-stopped
+    image: mariadb
+    volumes:
+      - ./db:/var/lib/mysql
+    env_file:
+      - ./.env
