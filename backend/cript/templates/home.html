@@ -5,8 +5,14 @@
 {% endblock %}
 
 {% block content%}
-    <section class="d-flex w-50 m-auto justify-content-between">
-        <a href="decode" class="btn btn-warning ">Decode</a>
-        <a href="encode" class="btn btn-warning ">Encode</a>
+    <section class="rounded border border-2 border-dark p-2 d-flex w-25 mt-5 ms-5 justify-content-between">
+        <p class="align-self-center m-0">ADFG(V)X cript algorithm</p>
+        <a href="adfgx/encode" class="btn btn-warning ">Encode</a>
+        <a href="adfgx/decode" class="btn btn-warning ">Decode</a>
+    </section>
+    <section class="rounded border border-2 border-dark p-2 d-flex w-25 mt-5 ms-5 justify-content-between">
+        <a href="playfair/encode" class="btn btn-info ">Encode</a>
+        <a href="playfair/decode" class="btn btn-info ">Decode</a>
+        <p class="align-self-center m-0">Playfair cript algorithm</p>
     </section>
 {% endblock %}

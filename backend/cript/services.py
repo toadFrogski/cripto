@@ -1,7 +1,24 @@
 import math
+import re
 
 
-class ConvertADFGX:
+class BaseConnvert:
+
+    def create_alphabet(key, alphabet='abcdefghiklmnopqrstuvwxyz', options={}):
+        for char in key.lower():
+            alphabet = alphabet.replace(char, '')
+
+        if 'replace' in options:
+            key = key.lower().replace(
+                options['replace'][0], options['replace'][1]) if options['replace'][0] in key else key
+        clear_key = ''
+        for char in key.lower():
+            clear_key = clear_key + char if char not in clear_key else clear_key
+
+        return clear_key + alphabet
+
+
+class ConvertADFGX(BaseConnvert):
 
     def convert_to_ADFGX(message, key):
         return ConvertADFGX.mix(
@@ -23,20 +40,6 @@ class ConvertADFGX:
                     alphabet="abcdefghijklmnopqrstuvwxyz0123456789"),
                 char_set='adfgvx'),
             key)
-
-    def create_alphabet(key, alphabet='abcdefghiklmnopqrstuvwxyz', options={}):
-
-        for char in key.lower():
-            alphabet = alphabet.replace(char, '')
-
-        if 'replace' in options:
-            key = key.lower().replace(
-                options['replace'][0], options['replace'][1]) if options['replace'][0] in key else key
-        clear_key = ''
-        for char in key.lower():
-            clear_key = clear_key + char if char not in clear_key else clear_key
-
-        return clear_key + alphabet
 
     def encode(message, alpabet, char_set='adfgx'):
         result = ''
@@ -62,11 +65,10 @@ class ConvertADFGX:
             index = index + 1 if index < len(key)-1 else 0
         mix.sort(key=lambda x: x['key'])
 
-        print(mix)
         return ''.join(sum(list(map(lambda x: x["tail"], mix)), []))
 
-    def convert_from_ADFG_X(message, key, set='adfgx', alphabet='abcdefghiklmnopqrstuvwxyz', options = {}):
-        alphabet= ConvertADFGX.create_alphabet(
+    def convert_from_ADFG_X(message, key, char_set='adfgx', alphabet='abcdefghiklmnopqrstuvwxyz', options={}):
+        alphabet = ConvertADFGX.create_alphabet(
             key,
             alphabet=alphabet,
             options=options
@@ -77,11 +79,11 @@ class ConvertADFGX:
         row = 0
 
         for char in alphabet:
-            _alphabet.append({'char': char, 'code': set[row] + set[index]})
-            index = index + 1 if index < len(set)-1 else 0
+            _alphabet.append({'char': char, 'code': char_set[row] + char_set[index]})
+            index = index + 1 if index < len(char_set)-1 else 0
             row = row + 1 if index == 0 else row
 
-        _message = [ {'key': keychar, 'tail': [], 'num': index } for index, keychar in enumerate(key)]
+        _message = [{'key': keychar, 'tail': [], 'num': index} for index, keychar in enumerate(key)]
         _message.sort(key=lambda x: x['key'])
 
         long_chunk_length = len(message[0:math.ceil(len(message)/len(key))])
@@ -119,3 +121,69 @@ class ConvertADFGX:
                     string = string + char['char']
                     break
         return string
+
+
+class ConvertPlayfair(BaseConnvert):
+
+    def convert_to_playfair(message, key):
+
+        def normalize_message(message):
+            message = re.sub(r'[\d\s]*', r'', message.lower().replace('j', 'i'))
+            for i in range(0, len(message), 2):
+                if len(message[i:i+2]) == 1:
+                    break
+                if message[i] == message[i+1]:
+                    message = f"{message[:i+1]}x{message[i+1:]}"
+            message = message + 'x' if len(message) % 2 != 0 else message
+            return message
+
+        alphabet = ConvertPlayfair.create_alphabet(
+            key,
+            options={'replace': ['j', 'i']}
+        )
+        message = normalize_message(message)
+        message = [''.join(message[n:n+2]) for n in range(0, len(message), 2)]
+
+        result = ''
+        for pair in message:
+            a = alphabet.index(pair[0])
+            b = alphabet.index(pair[1])
+            a_row, a_col = a // 5, a % 5
+            b_row, b_col = b // 5, b % 5
+
+            if a_row == b_row:
+                result += alphabet[a+1] if a_col != 4 else alphabet[a-4]
+                result += alphabet[b+1] if b_col != 4 else alphabet[b-4]
+            elif a_col == b_col:
+                result += alphabet[a+5] if a_row != 4 else alphabet[a-20]
+                result += alphabet[b+5] if b_row != 4 else alphabet[b-20]
+            else:
+                result += f"{alphabet[a+(b_col - a_col)]}{alphabet[b+(a_col - b_col)]}"
+
+        return result
+
+    def convert_from_playfair(message, key):
+        alphabet = ConvertPlayfair.create_alphabet(
+            key,
+            options={'replace': ['j', 'i']}
+        )
+
+        message = [''.join(message[n:n+2]) for n in range(0, len(message), 2)]
+        print(message)
+        print(alphabet)
+        result = ''
+        for pair in message:
+            a = alphabet.index(pair[0])
+            b = alphabet.index(pair[1])
+            a_row, a_col = a // 5, a % 5
+            b_row, b_col = b // 5, b % 5
+
+            if a_row == b_row:
+                result += alphabet[a-1] if a_col != 0 else alphabet[a+4]
+                result += alphabet[b-1] if b_col != 0 else alphabet[b+4]
+            elif a_col == b_col:
+                result += alphabet[a-5] if a_row != 0 else alphabet[a+20]
+                result += alphabet[b-5] if b_row != 0 else alphabet[b+20]
+            else:
+                result += f"{alphabet[a+(b_col - a_col)]}{alphabet[b+(a_col - b_col)]}"
+        return result.replace('x', '')
