@@ -10,12 +10,10 @@ class ADFGXForm(ModelForm):
         widgets = {
             'original_message': Textarea(attrs={
                 'class': "form-control",
-                'style': 'max-width: 200px;',
                 'placeholder': 'ADFGX'
             }),
             'key': TextInput(attrs={
                 'class': "form-control",
-                'style': 'max-width: 200px;',
                 'placeholder': 'Key'
             }),
             'method': Select(attrs={
@@ -32,12 +30,10 @@ class PlayfairForm(ModelForm):
         widgets = {
             'original_message': Textarea(attrs={
                 'class': "form-control",
-                'style': 'max-width: 200px;',
                 'placeholder': 'ADFGX'
             }),
             'key': TextInput(attrs={
                 'class': "form-control",
-                'style': 'max-width: 200px;',
                 'placeholder': 'Key'
             }),
         }
