@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from cript.models import ADFGX, Playfair
+from cript.models import ADFGX, Playfair, Salsa
 from django.forms import ModelForm, TextInput, Textarea, Select
 
 
@@ -31,6 +31,22 @@ class PlayfairForm(ModelForm):
             'original_message': Textarea(attrs={
                 'class': "form-control",
                 'placeholder': 'ADFGX'
+            }),
+            'key': TextInput(attrs={
+                'class': "form-control",
+                'placeholder': 'Key'
+            }),
+        }
+
+
+class SalsaForm(ModelForm):
+    class Meta:
+        model = Salsa
+        fields = ['original_message', 'key']
+        widgets = {
+            'original_message': Textarea(attrs={
+                'class': "form-control",
+                'placeholder': 'Salsa'
             }),
             'key': TextInput(attrs={
                 'class': "form-control",

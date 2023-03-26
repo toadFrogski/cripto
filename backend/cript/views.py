@@ -1,9 +1,10 @@
+import hashlib
 import json
 from django.views.generic import View
 from django.shortcuts import render, redirect
-from cript.forms import ADFGXForm, PlayfairForm
-from cript.models import ADFGX, Playfair
-from cript.services import ConvertADFGX, ConvertPlayfair
+from cript.forms import ADFGXForm, PlayfairForm, SalsaForm
+from cript.models import ADFGX, Playfair, Salsa as SalsaModel
+from cript.services import ConvertADFGX, ConvertPlayfair, Salsa
 
 class ADFGXEncodeView(View):
 
@@ -87,7 +88,7 @@ class PlayfairDecodeView(View):
         return render(request, 'page.html', {
             'form': PlayfairForm(),
             'messages': messages,
-            'type': 'Decode',
+            'type': 'Encode',
             'color': 'bg-info'
         })
 
@@ -101,3 +102,59 @@ class PlayfairDecodeView(View):
             message.save()
             form.save_m2m()
         return redirect(to="playfair_decode")
+
+class SalsaEncodeView(View):
+
+    def get(self, request):
+        messages = SalsaModel.objects.filter(type=SalsaModel.Types.ENCODE)
+        return render(request, 'page.html', {
+            'form': SalsaForm(),
+            'messages': messages,
+            'type': 'Encode',
+            'color': 'bg-success'
+        })
+
+    def post(self, request):
+        form = SalsaForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.type = 'EN'
+            message.encoded_message = SalsaEncodeView.crypt(message.original_message, message.key)
+            message.save()
+            form.save_m2m()
+        return redirect(to="salsa_encode")
+
+    def crypt(message, key):
+        message = message.encode("UTF-8")
+        k32 = hashlib.sha256(key.encode("UTF-8")).digest()
+        salsa = Salsa()
+        streamkey = salsa(k32, [3,1,4,1,5,9,2,6], [7,0,0,0,0,0,0,0])
+        return "|".join([str(m ^ streamkey[i%16] & salsa._mask) for i, m in enumerate(message)])
+
+class SalsaDecodeView(View):
+
+    def get(self, request):
+        messages = SalsaModel.objects.filter(type=SalsaModel.Types.DECODE)
+        return render(request, 'page.html', {
+            'form': SalsaForm(),
+            'messages': messages,
+            'type': 'Decode',
+            'color': 'bg-success'
+        })
+
+    def post(self, request):
+        form = SalsaForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.type = 'DE'
+            message.encoded_message = SalsaDecodeView.crypt(message.original_message, message.key)
+            message.save()
+            form.save_m2m()
+        return redirect(to="salsa_decode")
+
+    def crypt(message, key):
+        message = [int(char) for char in message.split("|")]
+        k32 = hashlib.sha256(key.encode("UTF-8")).digest()
+        salsa = Salsa()
+        streamkey = salsa(k32, [3,1,4,1,5,9,2,6], [7,0,0,0,0,0,0,0])
+        return "".join([chr(m ^ streamkey[i%16] & salsa._mask).encode("UTF-8").decode("UTF-8") for i, m in enumerate(message)])

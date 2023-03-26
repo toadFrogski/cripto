@@ -9,4 +9,6 @@ urlpatterns = [
     path('adfgx/decode', views.ADFGXDecodeView.as_view(), name='adfgx_decode'),
     path('playfair/encode', views.PlayfairEncodeView.as_view(), name='playfair_encode'),
     path('playfair/decode', views.PlayfairDecodeView.as_view(), name='playfair_decode'),
+    path('salsa/encode', views.SalsaEncodeView.as_view(), name='salsa_encode'),
+    path('salsa/decode', views.SalsaDecodeView.as_view(), name='salsa_decode'),
 ]

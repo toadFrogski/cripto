@@ -3,7 +3,6 @@ version: '3'
 volumes:
   python_sock:
 
-
 services:
   nginx:
     restart: unless-stopped
