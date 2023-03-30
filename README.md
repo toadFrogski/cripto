@@ -23,3 +23,9 @@ docker compose exec backend python manage.py collectstatic
 - Playfair
 
 Реализация алгоритмов описана в классах **ConvertADFGX** и **ConvertPlayfair**, которых хранятся в файле services.py по пути ```./backend/cript/services.py```
+
+## Лабораторная работа 2
+
+Вторая лабораторная работа посвящена реализации алгоритма Salsa20
+
+Реализация алгоритмов описана в классe **Salsa**, которых хранятся в файле services.py по пути ```./backend/cript/services.py```
