@@ -35,6 +35,6 @@ services:
     restart: unless-stopped
     image: mariadb
     volumes:
-      - ./db:/var/lib/mysql
+      - ./docker/db:/var/lib/mysql
     env_file:
       - ./.env
