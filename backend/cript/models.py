@@ -47,3 +47,16 @@ class Salsa(models.Model):
     type = models.CharField(
         max_length=2, choices=Types.choices
     )
+
+class Des(models.Model):
+
+    class Types(models.TextChoices):
+        ENCODE = 'EN', _('ENCODE')
+        DECODE = 'DE', _('DECODE')
+
+    original_message = models.TextField(null=False)
+    key = models.CharField(max_length=8, null=False)
+    encoded_message = models.TextField(null=True)
+    type = models.CharField(
+        max_length=2, choices=Types.choices
+    )

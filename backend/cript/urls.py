@@ -11,4 +11,7 @@ urlpatterns = [
     path('playfair/decode', views.PlayfairDecodeView.as_view(), name='playfair_decode'),
     path('salsa/encode', views.SalsaEncodeView.as_view(), name='salsa_encode'),
     path('salsa/decode', views.SalsaDecodeView.as_view(), name='salsa_decode'),
+    path('des/encode', views.DesEncodeView.as_view(), name='des_encode'),
+    path('des/decode', views.DesDecodeView.as_view(), name='des_decode'),
+
 ]
