@@ -60,3 +60,9 @@ class Des(models.Model):
     type = models.CharField(
         max_length=2, choices=Types.choices
     )
+
+
+class Sha(models.Model):
+
+    original_message = models.TextField(null=False)
+    encoded_message = models.TextField(null=True)

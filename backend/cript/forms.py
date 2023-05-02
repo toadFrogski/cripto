@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from cript.models import ADFGX, Playfair, Salsa, Des
+from cript.models import ADFGX, Playfair, Salsa, Des, Sha
 from django.forms import ModelForm, TextInput, Textarea, Select
 
 
@@ -18,7 +18,7 @@ class ADFGXForm(ModelForm):
             }),
             'method': Select(attrs={
                 'class': "btn btn-warning w-100 text-center rounded"
-                }
+            }
             )
         }
 
@@ -54,6 +54,7 @@ class SalsaForm(ModelForm):
             }),
         }
 
+
 class DesForm(ModelForm):
     class Meta:
         model = Des
@@ -67,4 +68,16 @@ class DesForm(ModelForm):
                 'class': "form-control",
                 'placeholder': 'Key',
             }),
+        }
+
+
+class ShaForm(ModelForm):
+    class Meta:
+        model = Sha
+        fields = ['original_message']
+        widgets = {
+            'original_message': Textarea(attrs={
+                'class': "form-control",
+                'placeholder': 'Sha256'
+            })
         }

@@ -13,5 +13,5 @@ urlpatterns = [
     path('salsa/decode', views.SalsaDecodeView.as_view(), name='salsa_decode'),
     path('des/encode', views.DesEncodeView.as_view(), name='des_encode'),
     path('des/decode', views.DesDecodeView.as_view(), name='des_decode'),
-
+    path('sha', views.ShaView.as_view(), name='sha_encode'),
 ]

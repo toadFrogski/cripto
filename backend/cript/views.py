@@ -2,12 +2,13 @@ import hashlib
 import json
 from django.views.generic import View
 from django.shortcuts import render, redirect
-from cript.forms import ADFGXForm, PlayfairForm, SalsaForm, DesForm
-from cript.models import ADFGX, Playfair, Salsa as SalsaModel, Des as DesModel
+from cript.forms import ADFGXForm, PlayfairForm, SalsaForm, DesForm, ShaForm
+from cript.models import ADFGX, Playfair, Salsa as SalsaModel, Des as DesModel, Sha as ShaModel
 from cript.services.Salsa import Salsa
 from cript.services.ConvertPlaydair import ConvertPlayfair
 from cript.services.ConvertADFGX import ConvertADFGX
 from cript.services.Des import Des
+from cript.services.Sha import Sha
 
 
 class ADFGXEncodeView(View):
@@ -171,6 +172,7 @@ class SalsaDecodeView(View):
                           7, 0, 0, 0, 0, 0, 0, 0])
         return "".join([chr(m ^ streamkey[i % 16] & salsa._mask).encode("UTF-8").decode("UTF-8") for i, m in enumerate(message)])
 
+
 class DesEncodeView(View):
 
     def get(self, request):
@@ -217,3 +219,25 @@ class DesDecodeView(View):
             message.save()
             form.save_m2m()
         return redirect(to="des_decode")
+
+
+class ShaView(View):
+
+    def get(self, request):
+        messages = ShaModel.objects.all()
+        return render(request, 'page.html', {
+            'form': ShaForm(),
+            'messages': messages,
+            'method': 'sha256',
+            'type': 'Encode',
+            'color': 'bg-danger'
+        })
+
+    def post(self, request):
+        form = ShaForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.encoded_message = str(Sha.sha256(message.original_message).hex())
+            message.save()
+            form.save_m2m()
+        return redirect(to="des_encode")
